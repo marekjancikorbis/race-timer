@@ -1,0 +1,147 @@
+<ion-content [fullscreen]="true">
+  <!-- Search Inputs -->
+  <div class="search-container" style="max-height: 40%">
+    <ion-list lines="none">
+      <!-- Start Location -->
+      <ion-item class="search-item">
+        <ion-label position="stacked">
+          Start Location
+          @if (startLocation) {
+            <span class="status-badge set">✓ Set</span>
+          } @else {
+            <span class="status-badge pending">Tap map to set</span>
+          }
+        </ion-label>
+        <div class="input-row">
+          <ion-input
+            [(ngModel)]="startAddress"
+            (ionChange)="startAddress = $event.detail.value || ''"
+            placeholder="Enter start address or tap map"
+            class="location-input"
+            [class.filled]="startLocation">
+          </ion-input>
+          <ion-button (click)="searchStart()" fill="clear" size="small">
+            <ion-icon slot="icon-only" name="search" color="primary"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+
+      <!-- Waypoints with Plus Button -->
+      @for (waypoint of waypoints; track waypoint.id; let idx = $index) {
+        <ion-item class="search-item waypoint-item" [class.pending]="isPending(idx)">
+          <ion-label position="stacked">
+            Waypoint {{ idx + 1 }}
+            @if (waypoint.lat !== 0 && waypoint.lng !== 0) {
+              <span class="status-badge set">✓ Set</span>
+            } @else if (isPending(idx)) {
+              <span class="status-badge waiting">Tap map to set location</span>
+            } @else {
+              <span class="status-badge pending">Search or tap map</span>
+            }
+          </ion-label>
+          <div class="input-row">
+            <ion-input
+              [(ngModel)]="waypoint.address"
+              (ionChange)="updateWaypointAddress(idx, $event.detail.value || '')"
+              placeholder="Enter waypoint address or tap map"
+              class="location-input"
+              [class.filled]="waypoint.lat !== 0 && waypoint.lng !== 0"
+              [class.waiting]="isPending(idx)">
+            </ion-input>
+            <ion-button (click)="searchWaypoint(idx)" fill="clear" size="small">
+              <ion-icon slot="icon-only" name="search" color="primary"></ion-icon>
+            </ion-button>
+            <ion-button (click)="removeWaypoint(idx)" fill="clear" size="small" color="danger">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-item>
+      }
+
+      <!-- Plus Button to Add Waypoint -->
+      @if (startLocation) {
+        <div class="add-waypoint-container">
+          <ion-button
+            (click)="addWaypointInput()"
+            fill="clear"
+            size="small"
+            class="add-waypoint-btn"
+            [disabled]="pendingWaypointIndex !== null">
+            <ion-icon slot="start" name="add"></ion-icon>
+            @if (pendingWaypointIndex !== null) {
+              Tap map to place
+            } @else {
+              Add Stop
+            }
+          </ion-button>
+        </div>
+      }
+
+      <!-- End Location -->
+      <ion-item class="search-item">
+        <ion-label position="stacked">
+          End Location
+          @if (endLocation) {
+            <span class="status-badge set">✓ Set</span>
+          } @else {
+            <span class="status-badge pending">Tap map to set</span>
+          }
+        </ion-label>
+        <div class="input-row">
+          <ion-input
+            [(ngModel)]="endAddress"
+            (ionChange)="endAddress = $event.detail.value || ''"
+            placeholder="Enter end address or tap map"
+            class="location-input"
+            [class.filled]="endLocation">
+          </ion-input>
+          <ion-button (click)="searchEnd()" fill="clear" size="small">
+            <ion-icon slot="icon-only" name="search" color="primary"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <div class="button-row">
+      <ion-button (click)="useCurrentLocation()" fill="outline" size="small">
+        <ion-icon slot="start" name="locate"></ion-icon>
+        Use My Location
+      </ion-button>
+
+      <ion-button
+        (click)="swapLocations()"
+        fill="outline"
+        size="small"
+        [disabled]="!startLocation || !endLocation">
+        <ion-icon slot="start" name="swap-vertical"></ion-icon>
+        Swap
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div #mapContainer class="map-container"></div>
+
+  <!-- Instructions -->
+  @if (!startLocation || !endLocation) {
+    <div class="instructions">
+      <p>
+        <ion-icon name="navigate" color="primary"></ion-icon>
+        @if (!startLocation) {
+          Tap map to set <strong>START</strong> location
+        } @else if (!endLocation) {
+          Tap map to set <strong>END</strong> location
+        }
+      </p>
+    </div>
+  } @else if (pendingWaypointIndex !== null) {
+    <div class="instructions waypoint-mode">
+      <p>
+        <ion-icon name="add" color="warning"></ion-icon>
+        Tap map to place <strong>WAYPOINT {{ pendingWaypointIndex + 1 }}</strong>
+      </p>
+    </div>
+  }
+
+
+</ion-content>

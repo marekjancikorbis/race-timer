@@ -1,0 +1,74 @@
+// Rectangular card styling
+.rectangular-card {
+  margin: 8px 0;
+  border-radius: 12px;
+  border-left: 6px solid;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  ion-card-content {
+    padding: 0;
+  }
+
+  .card-header {
+    padding: 16px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .item-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .item-description {
+    padding: 12px 16px;
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .item-id {
+    padding: 8px 16px 16px;
+    font-size: 0.75rem;
+    color: #999;
+    text-align: right;
+  }
+}
+
+// Plus button styling
+ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin-right: 4px;
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  color: #999;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 20px;
+}
+
+// Responsive adjustments
+@media (max-width: 576px) {
+  .rectangular-card {
+    margin: 6px 0;
+  }
+}

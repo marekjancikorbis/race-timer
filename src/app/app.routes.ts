@@ -2,12 +2,21 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard.page').then(m => m.DashboardPage)
   },
   {
     path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
   },
+  {
+    path: 'map',
+    loadComponent: () => import('./map-route/map-route.page').then(m => m.MapRoutePage)
+  },
+  {
+    path: '',
+    redirectTo: 'map',
+    pathMatch: 'full'
+  }
 ];

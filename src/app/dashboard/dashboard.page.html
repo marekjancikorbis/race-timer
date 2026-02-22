@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Dashboard</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openAddModal()" fill="clear" color="light">
+        <ion-icon slot="icon-only" name="add" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Dashboard</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row>
+      @for (item of items; track item.id) {
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+          <ion-card class="rectangular-card">
+            <ion-card-content>
+              <div class="card-header">
+                <h2 class="item-title">{{ item.title }}</h2>
+              </div>
+              <p class="item-description">{{ item.description }}</p>
+              <div class="item-id">ID: {{ item.id }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      } @empty {
+        <ion-col size="12">
+          <div class="empty-state">
+            <p>No items yet. Tap the + button to add one!</p>
+          </div>
+        </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+</ion-content>
