@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Save Route</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()" color="light">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="modal-content">
+    <div class="route-preview">
+      <h3>Route Preview</h3>
+      <div class="route-details">
+        <p><strong>From:</strong> {{ startAddress || 'Start Location' }}</p>
+        @if (waypointCount > 0) {
+          <p class="waypoints-info">
+            <ion-icon name="flag"></ion-icon>
+            {{ waypointCount }} stop{{ waypointCount > 1 ? 's' : '' }}
+          </p>
+        }
+        <p><strong>To:</strong> {{ endAddress || 'End Location' }}</p>
+      </div>
+    </div>
+
+    <ion-item class="name-input">
+      <ion-label position="stacked">Route Name *</ion-label>
+      <ion-input
+        [(ngModel)]="routeName"
+        placeholder="Enter a name for this route"
+        (keyup.enter)="confirm()">
+      </ion-input>
+    </ion-item>
+
+    <div class="button-container">
+      <ion-button
+        expand="block"
+        color="medium"
+        (click)="cancel()"
+        class="cancel-btn">
+        Cancel
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="confirm()"
+        [disabled]="!routeName.trim()"
+        class="save-btn">
+        <ion-icon slot="start" name="save"></ion-icon>
+        Save Route
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

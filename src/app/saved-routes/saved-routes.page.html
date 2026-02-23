@@ -1,0 +1,75 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Saved Routes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createNewRoute()">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (savedRoutes.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="map" color="medium" class="empty-icon"></ion-icon>
+      <h2>No Saved Routes</h2>
+      <p>Create your first route by tapping the + button</p>
+      <ion-button (click)="createNewRoute()" fill="solid" color="primary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Create Route
+      </ion-button>
+    </div>
+  } @else {
+    <ion-grid>
+      <ion-row>
+        @for (route of savedRoutes; track route.id) {
+          <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+            <ion-card class="route-card" (click)="loadRoute(route)">
+              <div class="map-container" [id]="'map-' + route.id"></div>
+
+              <ion-card-header>
+                <div class="card-header-content">
+                  <ion-card-title>{{ route.name }}</ion-card-title>
+                  <ion-button
+                    fill="clear"
+                    color="danger"
+                    size="small"
+                    (click)="deleteRoute(route, $event)"
+                    class="delete-btn">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <div class="route-info">
+                  <p class="addresses">
+                    <span class="from">{{ route.start.address || 'Start' }}</span>
+                    <ion-icon name="arrow-forward" color="medium"></ion-icon>
+                    <span class="to">{{ route.end.address || 'End' }}</span>
+                  </p>
+
+                  <div class="meta-info">
+                    <span class="waypoints" *ngIf="route.waypoints.length > 0">
+                      <ion-icon name="flag" color="warning"></ion-icon>
+                      {{ route.waypoints.length }} stops
+                    </span>
+                    <span class="date">{{ formatDate(route.createdAt) }}</span>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  }
+
+  <!-- Floating Action Button -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="createNewRoute()" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

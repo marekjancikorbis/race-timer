@@ -15,8 +15,12 @@ export const routes: Routes = [
     loadComponent: () => import('./map-route/map-route.page').then(m => m.MapRoutePage)
   },
   {
+    path: 'saved-routes',
+    loadComponent: () => import('./saved-routes/saved-routes.page').then(m => m.SavedRoutesPage)
+  },
+  {
     path: '',
-    redirectTo: 'map',
+    redirectTo: 'saved-routes',
     pathMatch: 'full'
   }
 ];

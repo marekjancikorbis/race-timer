@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, NgZone } from '@angular/core';
+import {Component, ElementRef, ViewChild, AfterViewInit, NgZone, inject} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -10,11 +10,20 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonList
+  IonList,
+  IonModal,
+  ModalController,
+  AlertController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
-import { search, navigate, locate, swapVertical, add, trash } from 'ionicons/icons';
+import {search, navigate, locate, swapVertical, add, trash, save} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { Router, NavigationExtras } from '@angular/router';
+import { SaveRouteModalComponent } from '../components/save-route-modal/save-route-modal.component';
+import { RouteStorageService } from '../services/route-storage';
+
+import { list } from 'ionicons/icons';
+addIcons({ list, save });
 
 declare const google: any;
 
@@ -38,11 +47,21 @@ interface Location {
     IonLabel,
     IonInput,
     IonList,
-    FormsModule
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
   ]
 })
 export class MapRoutePage implements AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+
+  private ngZone = inject(NgZone);
+  private modalCtrl = inject(ModalController);
+  private routeStorage = inject(RouteStorageService);
+  private router = inject(Router);
+  private alertCtrl = inject(AlertController);
 
   map: any;
   directionsService: any;
@@ -60,19 +79,28 @@ export class MapRoutePage implements AfterViewInit {
   private idCounter = 0;
   public pendingWaypointIndex: number | null = null;
 
-  constructor(private ngZone: NgZone) {
+  canSave: boolean = false;
+
+  constructor(
+  ) {
     addIcons({
       search,
       navigate,
       locate,
       'swap-vertical': swapVertical,
       add,
-      trash
+      trash,
+      save,
+      list
     });
   }
 
   ngAfterViewInit() {
     this.initMap();
+  }
+
+  updateCanSave() {
+    this.canSave = !!(this.startLocation && this.endLocation);
   }
 
   initMap() {
@@ -153,6 +181,7 @@ export class MapRoutePage implements AfterViewInit {
 
     this.addMarker(location, 'start', 'http://maps.google.com/mapfiles/ms/icons/green-dot.png');
     this.map.panTo({ lat: location.lat, lng: location.lng });
+    this.updateCanSave();
   }
 
   setEndLocation(location: Location, address: string) {
@@ -161,6 +190,9 @@ export class MapRoutePage implements AfterViewInit {
     this.endLocation.address = address;
 
     this.addMarker(location, 'end', 'http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+
+    this.updateCanSave();
+    this.calculateRoute();
   }
 
   addWaypointFromMap(location: Location, address: string) {
@@ -424,8 +456,91 @@ export class MapRoutePage implements AfterViewInit {
     this.markers.clear();
 
     this.directionsRenderer.setDirections({ routes: [] });
+    this.canSave = false;
   }
 
+
+  async saveRoute() {
+    if (!this.startLocation || !this.endLocation) return;
+
+    const modal = await this.modalCtrl.create({
+      component: SaveRouteModalComponent,
+      componentProps: {
+        startAddress: this.startAddress,
+        endAddress: this.endAddress,
+        waypointCount: this.waypoints.filter(wp => wp.lat !== 0).length
+      },
+      cssClass: 'save-route-modal'
+    });
+
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm' && data?.name) {
+      await this.storeRoute(data.name);
+    }
+  }
+
+  private async storeRoute(name: string) {
+    const validWaypoints = this.waypoints
+      .filter(wp => wp.lat !== 0 && wp.lng !== 0)
+      .map(wp => ({
+        lat: wp.lat,
+        lng: wp.lng,
+        address: wp.address || ''
+      }));
+    const bounds = new google.maps.LatLngBounds();
+    bounds.extend({ lat: this.startLocation!.lat, lng: this.startLocation!.lng });
+    bounds.extend({ lat: this.endLocation!.lat, lng: this.endLocation!.lng });
+    validWaypoints.forEach(wp => bounds.extend({ lat: wp.lat, lng: wp.lng }));
+
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+
+    await this.routeStorage.saveRoute({
+      name,
+      start: {
+        lat: this.startLocation!.lat,
+        lng: this.startLocation!.lng,
+        address: this.startAddress
+      },
+      end: {
+        lat: this.endLocation!.lat,
+        lng: this.endLocation!.lng,
+        address: this.endAddress
+      },
+      waypoints: validWaypoints,
+      bounds: {
+        north: ne.lat(),
+        south: sw.lat(),
+        east: ne.lng(),
+        west: sw.lng()
+      }
+    });
+
+    const alert = await this.alertCtrl.create({
+      header: 'Route Saved',
+      message: `"${name}" has been saved successfully.`,
+      buttons: [
+        {
+          text: 'Stay Here',
+          role: 'cancel'
+        },
+        {
+          text: 'View Saved',
+          handler: () => {
+            this.router.navigate(['/saved-routes']);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  viewSavedRoutes() {
+    this.router.navigate(['/saved-routes']);
+  }
   swapLocations() {
     const temp = this.startLocation;
     this.startLocation = this.endLocation;

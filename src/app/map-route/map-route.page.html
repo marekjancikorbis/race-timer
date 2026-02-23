@@ -1,3 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Route Map</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="viewSavedRoutes()" fill="clear" color="light">
+        <ion-icon slot="icon-only" name="list"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button
+        (click)="saveRoute()"
+        [disabled]="!canSave"
+        fill="clear"
+        color="light">
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
+      <ion-button (click)="clearRoute()" fill="clear" color="light">
+        Clear
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content [fullscreen]="true">
   <!-- Search Inputs -->
   <div class="search-container" style="max-height: 40%">
