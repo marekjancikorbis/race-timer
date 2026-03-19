@@ -2,15 +2,6 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard.page').then(m => m.DashboardPage)
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
-  },
-  {
     path: 'map',
     loadComponent: () => import('./map-route/map-route.page').then(m => m.MapRoutePage)
   },
@@ -22,5 +13,10 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'saved-routes',
     pathMatch: 'full'
-  }
+  },  {
+    path: 'navigation',
+    loadComponent: () => import('./navigation/navigation.page').then( m => m.NavigationPage)
+  },
+
+
 ];
