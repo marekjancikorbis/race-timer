@@ -529,7 +529,8 @@ export class MapRoutePage implements AfterViewInit {
         {
           text: 'View Saved',
           handler: () => {
-            this.router.navigate(['/saved-routes']);
+            window.location.href = '/saved-routes';
+
           }
         }
       ]
@@ -539,7 +540,7 @@ export class MapRoutePage implements AfterViewInit {
   }
 
   viewSavedRoutes() {
-    this.router.navigate(['/saved-routes']);
+    window.location.href = '/saved-routes';
   }
   swapLocations() {
     const temp = this.startLocation;
