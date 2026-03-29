@@ -18,7 +18,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import {search, navigate, locate, swapVertical, add, trash, save} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router } from '@angular/router';
 import { SaveRouteModalComponent } from '../components/save-route-modal/save-route-modal.component';
 import { RouteStorageService } from '../services/route-storage';
 
@@ -104,13 +104,13 @@ export class MapRoutePage implements AfterViewInit {
   }
 
   initMap() {
-    const defaultCenter = { lat: 40.7128, lng: -74.0060 };
+    const defaultCenter = { lat: 49.2245, lng: 17.6654 };
 
     this.map = new google.maps.Map(this.mapContainer.nativeElement, {
       center: defaultCenter,
       zoom: 12,
       mapTypeId: 'roadmap',
-      mapTypeControl: true,
+      mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false
     });
@@ -122,7 +122,7 @@ export class MapRoutePage implements AfterViewInit {
       polylineOptions: {
         strokeColor: '#3880ff',
         strokeOpacity: 0.8,
-        strokeWeight: 5
+        strokeWeight: 7
       }
     });
 
@@ -477,7 +477,7 @@ export class MapRoutePage implements AfterViewInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm' && data?.name) {
-      await this.storeRoute(data.name);
+        await this.storeRoute(data.name);
     }
   }
 

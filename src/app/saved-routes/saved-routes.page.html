@@ -51,10 +51,11 @@
                   </p>
 
                   <div class="meta-info">
-                    <span class="waypoints" *ngIf="route.waypoints.length > 0">
-                      <ion-icon name="flag" color="warning"></ion-icon>
-                      {{ route.waypoints.length }} stops
-                    </span>
+                    @if (route.waypoints.length > 0) {
+                      <span class="waypoints">
+                        {{ route.waypoints.length }} stops
+                      </span>
+                    }
                     <span class="date">{{ formatDate(route.createdAt) }}</span>
                   </div>
                 </div>

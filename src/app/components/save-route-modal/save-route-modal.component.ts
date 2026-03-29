@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -13,6 +13,7 @@ import {
   ModalController, IonIcon
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
+import {RouteStorageService} from "../../services/route-storage";
 
 @Component({
   selector: 'app-save-route-modal',
@@ -40,7 +41,7 @@ export class SaveRouteModalComponent {
   endAddress: string = '';
   waypointCount: number = 0;
 
-  constructor(private modalCtrl: ModalController) {}
+  private modalCtrl = inject(ModalController);
 
   cancel() {
     return this.modalCtrl.dismiss(null, 'cancel');

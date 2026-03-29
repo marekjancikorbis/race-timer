@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, AfterViewInit, inject} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -53,26 +53,21 @@ declare const google: any;
   ]
 })
 export class SavedRoutesPage implements OnInit {
-  savedRoutes: SavedRoute[] = [];
+   savedRoutes: SavedRoute[] = [];
   mapInstances: Map<string, any> = new Map();
 
-  constructor(
-    private routeStorage: RouteStorageService,
-    private alertCtrl: AlertController,
-    private navCtrl: NavController,
-    private router: Router
-  ) {
+  private routeStorage = inject(RouteStorageService);
+  private alertCtrl = inject(AlertController);
+  private navCtrl = inject(NavController);
+  private router = inject(Router);
+
+  constructor() {
     addIcons({ add, trash, navigate, 'map': mapIcon });
   }
 
   async ngOnInit() {
     await this.loadRoutes();
   }
-
-  async ionViewWillEnter() {
-    await this.loadRoutes();
-  }
-
   async loadRoutes() {
     this.savedRoutes = await this.routeStorage.getAllRoutes();
     // Initialize mini maps after view updates
